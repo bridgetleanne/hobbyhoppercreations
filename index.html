@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Hobby Hopper Creations — Custom 3D printed items made to order. Choose your design, color, size, and finish. Unique creations made just for you." />
+  <meta property="og:title" content="Hobby Hopper Creations" />
+  <meta property="og:description" content="Custom 3D printed items made to order — unique, personalized, made to last." />
+  <meta property="og:url" content="https://hobbyhoppercreations.com" />
+  <title>Hobby Hopper Creations — Custom 3D Prints</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Square Web Payments SDK -->
+  <!-- Switch to https://web.squarecdn.com/v1/square.js for production -->
+  <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    (function(){
+      // Initialize EmailJS — replace with your public key
+      if (window.emailjs) emailjs.init({ publicKey: 'YOUR_EMAILJS_PUBLIC_KEY' });
+    })();
+  </script>
+</head>
+
+<body>
+<!-- Stars Background -->
+<canvas id="stars-canvas" aria-hidden="true"></canvas>
+
+<!-- Toast Container -->
+<div id="toast-container" aria-live="polite"></div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="success-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <span class="modal-icon">🎉</span>
+    <h2 id="modal-title">Order Received!</h2>
+    <p id="modal-message">Your order has been submitted successfully.</p>
+    <div class="modal-order-id" id="modal-order-id">Order #—</div>
+    <button class="btn btn-primary btn-lg" id="close-modal">Back to Home</button>
+  </div>
+</div>
+
+<div class="site-wrapper">
+
+  <!-- ━━ NAVBAR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container">
+      <a href="#" class="nav-brand" aria-label="Hobby Hopper Creations Home">
+        <div class="nav-logo-icon" aria-hidden="true">🐇</div>
+        <div class="nav-brand-name">
+          Hobby Hopper
+          <span>Creations</span>
+        </div>
+      </a>
+
+      <ul class="nav-links" role="list">
+        <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#catalog">Browse Items</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#order" class="nav-cta">Order Now</a></li>
+      </ul>
+
+      <button class="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ━━ HERO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <header class="hero" id="home">
+    <div class="hero-bg-glow top-left" aria-hidden="true"></div>
+    <div class="hero-bg-glow bottom-right" aria-hidden="true"></div>
+
+    <div class="container">
+      <p class="hero-eyebrow">✦ &nbsp; Handcrafted · One Layer at a Time &nbsp; ✦</p>
+      <h1 class="hero-title">
+        Hobby Hopper<br />
+        <span class="teal">Creations</span>
+      </h1>
+      <p class="hero-tagline">Custom · Unique · Made to Last</p>
+      <p class="hero-desc">
+        3D printed items designed and crafted just for you. Choose from our catalog
+        or request something completely custom — dragons, dice, décor, and beyond.
+      </p>
+      <div class="hero-buttons">
+        <a href="#catalog" class="btn btn-primary btn-lg">Browse the Catalog</a>
+        <a href="#order"   class="btn btn-outline btn-lg">Place a Custom Order</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ━━ TRUST BAR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <div class="trust-bar">
+    <div class="container">
+      <div class="trust-item">
+        <span class="trust-icon">🎨</span>
+        <div class="trust-text">
+          <strong>Fully Custom</strong>
+          <span>Your colors, your design</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon">⚡</span>
+        <div class="trust-text">
+          <strong>Fast Turnaround</strong>
+          <span>Most orders ship in 5–7 days</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon">🔒</span>
+        <div class="trust-text">
+          <strong>Secure Payments</strong>
+          <span>Powered by Square</span>
+        </div>
+      </div>
+      <div class="trust-item">
+        <span class="trust-icon">✨</span>
+        <div class="trust-text">
+          <strong>High Quality</strong>
+          <span>Premium filaments only</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ━━ HOW IT WORKS ━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="how-it-works">
+    <div class="container">
+      <h2 class="section-title reveal">How It <span>Works</span></h2>
+      <p class="section-subtitle reveal">Simple. Custom. Delivered.</p>
+
+      <div class="steps-grid">
+        <div class="step-card reveal">
+          <div class="step-number">1</div>
+          <span class="step-icon">🛍️</span>
+          <h3>Pick Your Item</h3>
+          <p>Browse our catalog of dragons, figurines, functional prints, gaming pieces, and more — or describe something completely custom.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">2</div>
+          <span class="step-icon">🎨</span>
+          <h3>Customize It</h3>
+          <p>Choose your color, filament type, size, and finish. Every detail is yours to control — we make it exactly how you want it.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">3</div>
+          <span class="step-icon">💳</span>
+          <h3>Pay Securely</h3>
+          <p>Check out with confidence using Square — credit card, debit, Apple Pay, Google Pay, and more all accepted.</p>
+        </div>
+        <div class="step-card reveal">
+          <div class="step-number">4</div>
+          <span class="step-icon">📦</span>
+          <h3>We Print & Ship</h3>
+          <p>Your item is printed fresh just for you, carefully packed, and shipped directly to your door. Every order is made with care.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ━━ PRODUCT CATALOG ━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="catalog">
+    <div class="container">
+      <h2 class="section-title reveal">Browse the <span>Catalog</span></h2>
+      <p class="section-subtitle reveal">Click any item to start your order</p>
+
+      <div class="filter-tabs reveal">
+        <button class="filter-tab active" data-filter="all">All Items</button>
+        <button class="filter-tab" data-filter="fantasy">Fantasy</button>
+        <button class="filter-tab" data-filter="geometric">Geometric</button>
+        <button class="filter-tab" data-filter="functional">Functional</button>
+        <button class="filter-tab" data-filter="gaming">Gaming</button>
+        <button class="filter-tab" data-filter="custom">Custom</button>
+      </div>
+
+      <div class="products-grid" id="products-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ━━ GALLERY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="gallery">
+    <div class="container">
+      <h2 class="section-title reveal">The <span>Showcase</span></h2>
+      <p class="section-subtitle reveal">A few things from our print farm</p>
+
+      <div class="gallery-grid reveal">
+        <div class="gallery-item">
+          <span>🐉</span>
+          <div class="gallery-label">Dragon Figurine — Galaxy Silk</div>
+        </div>
+        <div class="gallery-item">
+          <span>🥚</span>
+          <div class="gallery-label">Dragon Egg — Deep Crimson</div>
+        </div>
+        <div class="gallery-item">
+          <span>🎲</span>
+          <div class="gallery-label">Polyhedral Dice Set</div>
+        </div>
+        <div class="gallery-item">
+          <span>🐙</span>
+          <div class="gallery-label">Octopus Sculpture — Chrome</div>
+        </div>
+        <div class="gallery-item">
+          <span>🦊</span>
+          <div class="gallery-label">Flexi Fox — Sunset Orange</div>
+        </div>
+        <div class="gallery-item">
+          <span>🪴</span>
+          <div class="gallery-label">Geometric Planter — Teal</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ━━ ORDER SECTION ━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="order">
+    <div class="container">
+      <h2 class="section-title reveal">Place Your <span>Order</span></h2>
+      <p class="section-subtitle reveal">Custom. Unique. Made just for you.</p>
+
+      <div class="order-layout">
+
+        <!-- Order Form -->
+        <div class="order-form-wrap glow-frame reveal">
+
+          <!-- Step Tabs -->
+          <div class="form-steps" role="tablist" aria-label="Order steps">
+            <div class="form-step-tab active" role="tab" aria-selected="true">
+              <span>🛍️</span>Item & Style
+            </div>
+            <div class="form-step-tab" role="tab" aria-selected="false">
+              <span>👤</span>Your Info
+            </div>
+            <div class="form-step-tab" role="tab" aria-selected="false">
+              <span>💳</span>Payment
+            </div>
+          </div>
+
+          <!-- ── STEP 1: Item & Customization ── -->
+          <div class="form-panel active" id="panel-1" role="tabpanel">
+            <p class="form-panel-title">Step 1 — Choose Your Item & Style</p>
+
+            <div class="form-group">
+              <label for="order-product" class="form-label">
+                Item <span class="required">*</span>
+              </label>
+              <select id="order-product" class="form-control" aria-required="true">
+                <!-- Populated by JS -->
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">
+                Color / Filament <span class="required">*</span>
+              </label>
+              <div id="color-swatches" class="color-swatches" role="group" aria-label="Color selection">
+                <!-- Populated by JS -->
+              </div>
+              <p style="margin-top:8px;font-size:0.78rem;color:var(--silver)">
+                Hover a swatch to see the color name. More colors available — ask us!
+              </p>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Size</label>
+              <div id="size-options" class="size-options" role="group" aria-label="Size selection">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Finish</label>
+              <div id="finish-options" class="finish-options" role="group" aria-label="Finish selection">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="order-qty" class="form-label">Quantity</label>
+              <input type="number" id="order-qty" class="form-control"
+                     value="1" min="1" max="20" style="max-width:120px" />
+            </div>
+
+            <div class="form-group">
+              <label for="order-notes" class="form-label">Special Instructions</label>
+              <textarea id="order-notes" class="form-control"
+                        placeholder="Describe any customizations, reference images, special requirements…"
+                        rows="4"></textarea>
+            </div>
+
+            <div class="form-nav">
+              <span></span>
+              <button class="btn btn-primary" id="next-to-step2">
+                Continue to Contact Info →
+              </button>
+            </div>
+          </div>
+
+          <!-- ── STEP 2: Customer Info ── -->
+          <div class="form-panel" id="panel-2" role="tabpanel">
+            <p class="form-panel-title">Step 2 — Your Contact Information</p>
+
+            <div class="form-group">
+              <label for="customer-name" class="form-label">
+                Full Name <span class="required">*</span>
+              </label>
+              <input type="text" id="customer-name" class="form-control"
+                     placeholder="Your name" autocomplete="name" aria-required="true" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="customer-email" class="form-label">
+                  Email <span class="required">*</span>
+                </label>
+                <input type="email" id="customer-email" class="form-control"
+                       placeholder="you@example.com" autocomplete="email" aria-required="true" />
+              </div>
+              <div class="form-group">
+                <label for="customer-phone" class="form-label">Phone (optional)</label>
+                <input type="tel" id="customer-phone" class="form-control"
+                       placeholder="(555) 000-0000" autocomplete="tel" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="shipping-address" class="form-label">
+                Shipping Address <span class="required">*</span>
+              </label>
+              <input type="text" id="shipping-address" class="form-control"
+                     placeholder="Street address" autocomplete="street-address" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="shipping-city" class="form-label">City</label>
+                <input type="text" id="shipping-city" class="form-control"
+                       placeholder="City" autocomplete="address-level2" />
+              </div>
+              <div class="form-group">
+                <label for="shipping-state" class="form-label">State</label>
+                <input type="text" id="shipping-state" class="form-control"
+                       placeholder="State" autocomplete="address-level1" style="max-width:80px" />
+              </div>
+              <div class="form-group">
+                <label for="shipping-zip" class="form-label">ZIP</label>
+                <input type="text" id="shipping-zip" class="form-control"
+                       placeholder="ZIP" autocomplete="postal-code" style="max-width:100px" />
+              </div>
+            </div>
+
+            <div class="form-nav">
+              <button class="form-nav-back" id="back-to-step1">← Back</button>
+              <button class="btn btn-primary" id="next-to-step3">
+                Continue to Payment →
+              </button>
+            </div>
+          </div>
+
+          <!-- ── STEP 3: Payment ── -->
+          <div class="form-panel" id="panel-3" role="tabpanel">
+            <p class="form-panel-title">Step 3 — Secure Payment</p>
+
+            <div id="custom-pricing-note" class="summary-note" style="display:none;margin-bottom:20px">
+              ✨ <strong>Custom Quote Item:</strong> No payment is due now. We'll review your order
+              and send a quote to your email within 24 hours.
+            </div>
+
+            <div id="square-payment-form">
+              <div class="payment-methods-label">Accepted Cards</div>
+              <div class="payment-icons">
+                <span class="payment-icon-badge">Visa</span>
+                <span class="payment-icon-badge">Mastercard</span>
+                <span class="payment-icon-badge">Amex</span>
+                <span class="payment-icon-badge">Discover</span>
+                <span class="payment-icon-badge">Apple Pay</span>
+                <span class="payment-icon-badge">Google Pay</span>
+              </div>
+
+              <!-- Square mounts its card form here -->
+              <div id="card-container" role="group" aria-label="Card payment form"></div>
+
+              <div id="payment-status" aria-live="polite"></div>
+            </div>
+
+            <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:14px;margin:16px 0;font-size:0.8rem;color:var(--silver);display:flex;align-items:center;gap:8px;">
+              🔒 &nbsp; Payments are securely processed by Square. Your card info is never stored on our servers.
+            </div>
+
+            <div class="form-nav">
+              <button class="form-nav-back" id="back-to-step2">← Back</button>
+              <button class="btn btn-primary btn-lg" id="submit-payment">
+                🎉 &nbsp; Complete Order
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Order Summary Sidebar -->
+        <aside class="order-summary glow-frame reveal" aria-label="Order summary">
+          <h3>Order Summary</h3>
+
+          <div class="summary-item">
+            <span class="label">Item</span>
+            <span class="value" id="summary-item">—</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Color</span>
+            <span class="value" id="summary-color">—</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Size</span>
+            <span class="value" id="summary-size">Medium</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Finish</span>
+            <span class="value" id="summary-finish">Standard</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Quantity</span>
+            <span class="value" id="summary-qty">1</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Customer</span>
+            <span class="value" id="summary-customer">—</span>
+          </div>
+
+          <div class="summary-total">
+            <span class="label">Estimated Total</span>
+            <span class="value" id="summary-total">$0.00</span>
+          </div>
+
+          <div class="summary-note">
+            💡 Prices vary by size, detail, and filament type. Final price confirmed after order review for custom items.
+          </div>
+
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+            <p style="font-family:var(--font-heading);font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal-mid);margin-bottom:10px;">Questions?</p>
+            <a href="mailto:orders@hobbyhoppercreations.com"
+               style="color:var(--silver);font-size:0.85rem;text-decoration:none;display:block;margin-bottom:6px;">
+              📧 orders@hobbyhoppercreations.com
+            </a>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ━━ FAQ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <section id="faq">
+    <div class="container">
+      <h2 class="section-title reveal">Common <span>Questions</span></h2>
+      <p class="section-subtitle reveal">Everything you need to know</p>
+
+      <div class="faq-grid">
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            How long does an order take?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Most in-stock or standard orders are printed and shipped within 5–7 business days. Large or highly detailed custom pieces may take 7–14 days. We'll always communicate a realistic timeline when your order is confirmed.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            Can I request something not in the catalog?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Absolutely! Select "Custom Request" from the catalog or product dropdown, describe what you're looking for, and we'll review it and send you a quote within 24 hours. If we can print it, we will!</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            What filament types do you use?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>We primarily use PLA and PLA+ for most prints, which gives excellent detail and color range. We also offer Silk PLA for metallic/shimmery finishes, and PETG for items that need more durability. Ask about specialty filaments!</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            Do you ship nationwide?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Yes! We ship anywhere in the continental United States. Shipping costs are calculated based on size and weight and will be included in your order confirmation. We use USPS and UPS for all shipments.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            What payment methods do you accept?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>We accept all major credit and debit cards (Visa, Mastercard, Amex, Discover), Apple Pay, and Google Pay — all securely processed through Square. Your payment info is encrypted and never stored on our site.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            What's your refund / exchange policy?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Since every item is made to order, we don't accept returns for change of mind. However, if there's a defect or the item arrived damaged, contact us within 7 days of delivery and we'll reprint or refund — no hassle.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            Can I provide my own design files?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Yes! If you have an STL, OBJ, or 3MF file you'd like printed, select "Custom Request" and mention it in the special instructions. Email the file to orders@hobbyhoppercreations.com after placing your order.</p>
+          </div>
+        </div>
+
+        <div class="faq-item reveal">
+          <button class="faq-question" aria-expanded="false">
+            Are the prints food-safe or waterproof?
+            <span class="faq-chevron">▼</span>
+          </button>
+          <div class="faq-answer">
+            <p>Standard PLA prints are not food-safe or fully waterproof due to the layer structure of FDM printing. For planters and decorative items, they work great. For functional food-contact items, we recommend using an epoxy coating — ask us about this!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ━━ FOOTER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ -->
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h4>Hobby Hopper Creations</h4>
+          <p>Custom 3D printed items made with passion and precision. Every print is crafted uniquely for you — because cookie-cutter isn't our style.</p>
+        </div>
+
+        <div class="footer-col">
+          <h5>Quick Links</h5>
+          <ul>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#catalog">Browse Items</a></li>
+            <li><a href="#gallery">Gallery</a></li>
+            <li><a href="#order">Place an Order</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Contact</h5>
+          <ul>
+            <li><a href="mailto:orders@hobbyhoppercreations.com">orders@hobbyhoppercreations.com</a></li>
+            <li><a href="#order">Custom Order Request</a></li>
+          </ul>
+          <div style="margin-top:20px;">
+            <p style="font-size:0.78rem;color:var(--silver);margin-bottom:8px;font-family:var(--font-heading);letter-spacing:0.1em;text-transform:uppercase;">We Accept</p>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <span class="payment-icon-badge">Visa</span>
+              <span class="payment-icon-badge">MC</span>
+              <span class="payment-icon-badge">Amex</span>
+              <span class="payment-icon-badge" style="background:rgba(0,0,0,0.5);color:white">⬛ Pay</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>© <script>document.write(new Date().getFullYear())</script> Hobby Hopper Creations · <span class="teal">hobbyhoppercreations.com</span></p>
+        <p>Payments secured by <span class="teal">Square</span> · Built with ♥ for makers</p>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /.site-wrapper -->
+
+<!-- Main Script -->
+<script src="js/main.js"></script>
+</body>
+</html>
