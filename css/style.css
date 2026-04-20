@@ -7,38 +7,41 @@
 
 /* ── CSS Variables ─────────────────────────────── */
 :root {
-  --bg-void:        #020b0c;
-  --bg-deep:        #030f10;
-  --bg-card:        #071618;
-  --bg-card-hover:  #0c2224;
-  --bg-input:       #051314;
+  --bg-void:        #010a0a;
+  --bg-deep:        #021010;
+  --bg-card:        #051515;
+  --bg-card-hover:  #0a2020;
+  --bg-input:       #031212;
 
-  --teal-bright:    #00e8d0;
-  --teal-mid:       #00bfad;
-  --teal-dark:      #007a70;
-  --teal-glow:      rgba(0, 232, 208, 0.35);
-  --teal-glow-sm:   rgba(0, 232, 208, 0.15);
+  --teal-bright:    #00e8c8;
+  --teal-mid:       #00b8a0;
+  --teal-dark:      #005a50;
+  --teal-glow:      rgba(0, 232, 200, 0.35);
+  --teal-glow-sm:   rgba(0, 232, 200, 0.12);
 
-  --silver:         #a8c4c8;
-  --silver-light:   #d4eaed;
-  --white:          #eef8f8;
+  --silver:         #8ab8b4;
+  --silver-light:   #c0deda;
+  --white:          #e8f8f6;
 
-  --border:         rgba(0, 232, 208, 0.25);
-  --border-bright:  rgba(0, 232, 208, 0.6);
+  --border:         rgba(0, 232, 200, 0.18);
+  --border-bright:  rgba(0, 232, 200, 0.55);
 
   --danger:         #e05577;
   --success:        #00e8a0;
 
-  --radius:         12px;
-  --radius-lg:      20px;
+  --radius:         8px;
+  --radius-lg:      14px;
 
   --font-display: 'Cinzel Decorative', serif;
   --font-heading: 'Cinzel', serif;
   --font-body:    'Raleway', sans-serif;
 
-  --shadow-teal:  0 0 30px rgba(0, 232, 208, 0.2), 0 0 60px rgba(0, 232, 208, 0.08);
-  --shadow-card:  0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-teal:  0 0 30px rgba(0, 232, 200, 0.15), 0 0 60px rgba(0, 232, 200, 0.06);
+  --shadow-card:  0 8px 32px rgba(0, 0, 0, 0.7);
   --shadow-glow:  0 0 20px var(--teal-glow);
+
+  /* HUD bracket size */
+  --bracket: 16px;
 }
 
 /* ── Reset & Base ──────────────────────────────── */
@@ -53,6 +56,11 @@ body {
   line-height: 1.65;
   overflow-x: hidden;
   min-height: 100vh;
+  /* Subtle scan-line grid matching the logo's inner grid */
+  background-image:
+    linear-gradient(rgba(0,232,200,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,232,200,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
 }
 
 ::selection { background: var(--teal-dark); color: var(--white); }
@@ -87,21 +95,24 @@ section { padding: 80px 0; position: relative; }
 .section-divider {
   width: 100%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--teal-mid), var(--teal-bright), var(--teal-mid), transparent);
+  background: linear-gradient(90deg, transparent, var(--teal-dark), var(--teal-bright), var(--teal-dark), transparent);
   margin: 0 auto;
   position: relative;
 }
 .section-divider::before,
 .section-divider::after {
-  content: '✦';
+  content: '';
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--teal-bright);
-  font-size: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal-bright);
+  box-shadow: 0 0 8px var(--teal-glow);
 }
-.section-divider::before { left: calc(50% - 60px); }
-.section-divider::after  { right: calc(50% - 60px); }
+.section-divider::before { left: calc(50% - 40px); }
+.section-divider::after  { right: calc(50% - 40px); }
 
 /* ── Section Titles ────────────────────────────── */
 .section-title {
@@ -126,6 +137,31 @@ section { padding: 80px 0; position: relative; }
   margin-bottom: 52px;
 }
 
+/* ── HUD Bracket corners ───────────────────────── */
+.hud-frame {
+  position: relative;
+}
+.hud-frame::before,
+.hud-frame::after {
+  content: '';
+  position: absolute;
+  width: var(--bracket);
+  height: var(--bracket);
+  border-color: var(--teal-bright);
+  border-style: solid;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.hud-frame::before {
+  top: -1px; left: -1px;
+  border-width: 2px 0 0 2px;
+}
+.hud-frame::after {
+  bottom: -1px; right: -1px;
+  border-width: 0 2px 2px 0;
+}
+
 /* ── Teal Border Card ──────────────────────────── */
 .card {
   background: var(--bg-card);
@@ -134,6 +170,7 @@ section { padding: 80px 0; position: relative; }
   padding: 28px;
   box-shadow: var(--shadow-card);
   transition: border-color 0.3s, box-shadow 0.3s;
+  position: relative;
 }
 .card:hover {
   border-color: var(--border-bright);
@@ -206,7 +243,7 @@ section { padding: 80px 0; position: relative; }
   animation: fadeSlideUp 0.7s ease both;
 }
 .hero-logo {
-  width: min(480px, 85vw);
+  width: min(280px, 55vw);
   height: auto;
   filter: drop-shadow(0 0 24px rgba(0,232,208,0.4))
           drop-shadow(0 0 60px rgba(0,180,160,0.15));
@@ -283,9 +320,51 @@ section { padding: 80px 0; position: relative; }
   transition: all 0.3s;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   HERO
-   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* ── HUD Dots (3 vertical dots from logo) ────── */
+.hud-dots {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+}
+.hud-dots span {
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--teal-bright);
+  box-shadow: 0 0 6px var(--teal-glow);
+}
+
+/* ── HUD Target Circle ─────────────────────────── */
+.hud-target {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--teal-bright);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px var(--teal-glow);
+}
+.hud-target::before,
+.hud-target::after {
+  content: '';
+  position: absolute;
+  background: var(--teal-bright);
+}
+.hud-target::before { width: 1.5px; height: 10px; }
+.hud-target::after  { width: 10px; height: 1.5px; }
+.hud-target-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--teal-bright);
+  box-shadow: 0 0 6px var(--teal-glow);
+  position: absolute;
+}
+
+/* ── Hero section ──────────────────────────────── */
 .hero {
   min-height: 100vh;
   display: flex;
@@ -296,6 +375,20 @@ section { padding: 80px 0; position: relative; }
   position: relative;
   overflow: hidden;
 }
+
+/* Corner bracket decorators on the hero */
+.hero::before,
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-color: rgba(0,232,200,0.4);
+  border-style: solid;
+  pointer-events: none;
+}
+.hero::before { top: 100px; left: 32px; border-width: 2px 0 0 2px; }
+.hero::after  { bottom: 32px; right: 32px; border-width: 0 2px 2px 0; }
 
 .hero-bg-glow {
   position: absolute;
@@ -477,14 +570,30 @@ section { padding: 80px 0; position: relative; }
   text-align: center;
   background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius);
   position: relative;
   transition: all 0.3s ease;
 }
+.step-card::before,
+.step-card::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--teal-bright);
+  border-style: solid;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.step-card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+.step-card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+.step-card:hover::before,
+.step-card:hover::after { opacity: 1; }
 .step-card:hover {
   border-color: var(--teal-mid);
   transform: translateY(-4px);
-  box-shadow: var(--shadow-card), 0 0 30px rgba(0,232,208,0.15);
+  box-shadow: var(--shadow-card), 0 0 30px rgba(0,232,200,0.12);
 }
 
 .step-number {
