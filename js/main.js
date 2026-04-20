@@ -47,10 +47,9 @@ const SIZES = [
 ];
 
 const FINISHES = [
-  { id: 'standard', label: 'Standard',      desc: 'As-printed finish',      surcharge: 0  },
-  { id: 'sanded',   label: 'Sanded Smooth', desc: 'Sanded for smoothness',  surcharge: 6  },
-  { id: 'painted',  label: 'Hand-Painted',  desc: 'Single accent color',    surcharge: 14 },
-  { id: 'epoxy',    label: 'Epoxy Coated',  desc: 'Glossy protective coat', surcharge: 10 },
+  { id: 'standard', label: 'Standard',      desc: 'As-printed finish',     surcharge: 0  },
+  { id: 'sanded',   label: 'Sanded Smooth', desc: 'Sanded for smoothness', surcharge: 6  },
+  { id: 'painted',  label: 'Hand-Painted',  desc: 'Single accent color',   surcharge: 14 },
 ];
 
 // ── STATE ───────────────────────────────────────
