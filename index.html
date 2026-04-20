@@ -16,18 +16,7 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css" />
 
-  <!-- Square Web Payments SDK -->
-  <!-- Switch to https://web.squarecdn.com/v1/square.js for production -->
-  <script src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
-
-  <!-- EmailJS -->
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script>
-    (function(){
-      // Initialize EmailJS — replace with your public key
-      if (window.emailjs) emailjs.init({ publicKey: 'YOUR_EMAILJS_PUBLIC_KEY' });
-    })();
-  </script>
+  <!-- No payment SDK needed — invoicing handled via Make.com + Square -->
 </head>
 
 <body>
@@ -249,7 +238,7 @@
               <span>👤</span>Your Info
             </div>
             <div class="form-step-tab" role="tab" aria-selected="false">
-              <span>💳</span>Payment
+              <span>✅</span>Review
             </div>
           </div>
 
@@ -374,40 +363,56 @@
             </div>
           </div>
 
-          <!-- ── STEP 3: Payment ── -->
+          <!-- ── STEP 3: Review & Submit ── -->
           <div class="form-panel" id="panel-3" role="tabpanel">
-            <p class="form-panel-title">Step 3 — Secure Payment</p>
+            <p class="form-panel-title">Step 3 — Review & Submit</p>
 
-            <div id="custom-pricing-note" class="summary-note" style="display:none;margin-bottom:20px">
-              ✨ <strong>Custom Quote Item:</strong> No payment is due now. We'll review your order
-              and send a quote to your email within 24 hours.
+            <div class="summary-note" style="margin-bottom:24px">
+              📧 &nbsp; After submitting, we'll review your order and send you a <strong>Square invoice</strong> to your email within 24 hours. You'll pay securely from that invoice — no card info needed right now.
             </div>
 
-            <div id="square-payment-form">
-              <div class="payment-methods-label">Accepted Cards</div>
-              <div class="payment-icons">
-                <span class="payment-icon-badge">Visa</span>
-                <span class="payment-icon-badge">Mastercard</span>
-                <span class="payment-icon-badge">Amex</span>
-                <span class="payment-icon-badge">Discover</span>
-                <span class="payment-icon-badge">Apple Pay</span>
-                <span class="payment-icon-badge">Google Pay</span>
+            <!-- Review Summary -->
+            <div class="review-grid">
+              <div class="review-block">
+                <p class="review-label">Item</p>
+                <p class="review-value" id="review-item">—</p>
               </div>
-
-              <!-- Square mounts its card form here -->
-              <div id="card-container" role="group" aria-label="Card payment form"></div>
-
-              <div id="payment-status" aria-live="polite"></div>
+              <div class="review-block">
+                <p class="review-label">Color</p>
+                <p class="review-value" id="review-color">—</p>
+              </div>
+              <div class="review-block">
+                <p class="review-label">Size</p>
+                <p class="review-value" id="review-size">—</p>
+              </div>
+              <div class="review-block">
+                <p class="review-label">Finish</p>
+                <p class="review-value" id="review-finish">—</p>
+              </div>
+              <div class="review-block">
+                <p class="review-label">Quantity</p>
+                <p class="review-value" id="review-qty">1</p>
+              </div>
+              <div class="review-block">
+                <p class="review-label">Name</p>
+                <p class="review-value" id="review-name">—</p>
+              </div>
+              <div class="review-block" style="grid-column:span 2">
+                <p class="review-label">Email (invoice sent here)</p>
+                <p class="review-value" id="review-email">—</p>
+              </div>
+              <div class="review-block" style="grid-column:span 2">
+                <p class="review-label">Special Instructions</p>
+                <p class="review-value" id="review-notes">None</p>
+              </div>
             </div>
 
-            <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:8px;padding:14px;margin:16px 0;font-size:0.8rem;color:var(--silver);display:flex;align-items:center;gap:8px;">
-              🔒 &nbsp; Payments are securely processed by Square. Your card info is never stored on our servers.
-            </div>
+            <div id="payment-status" aria-live="polite" style="margin:16px 0"></div>
 
             <div class="form-nav">
               <button class="form-nav-back" id="back-to-step2">← Back</button>
               <button class="btn btn-primary btn-lg" id="submit-payment">
-                🎉 &nbsp; Complete Order
+                🎉 &nbsp; Submit Order Request
               </button>
             </div>
           </div>
