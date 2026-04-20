@@ -443,18 +443,23 @@ async function handleFormSubmit() {
   btn.disabled = true;
 
   try {
-    const res  = await fetch(CONFIG.formspreeEndpoint, {
+    const res = await fetch(CONFIG.formspreeEndpoint, {
       method:  'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body:    JSON.stringify(payload),
     });
-    const data = await res.json();
 
     if (res.ok) {
       setStatus('', '');
       showSuccessModal();
     } else {
-      throw new Error(data?.errors?.map(e => e.message).join(', ') || 'Submission failed.');
+      // Try to get an error message if available
+      let errMsg = 'Submission failed.';
+      try {
+        const data = await res.json();
+        errMsg = data?.errors?.map(e => e.message).join(', ') || errMsg;
+      } catch (_) { /* response wasn't JSON, use default message */ }
+      throw new Error(errMsg);
     }
   } catch (err) {
     console.error(err);
