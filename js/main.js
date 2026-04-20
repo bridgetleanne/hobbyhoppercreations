@@ -400,12 +400,23 @@ function updateSummary() {
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 async function handleFormSubmit() {
   const btn = document.getElementById('submit-payment');
+
+  // Check Turnstile token
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value;
+  if (!turnstileToken) {
+    showToast('Please complete the human verification.', 'error');
+    return;
+  }
+
   state.orderId = generateOrderId();
 
   const size   = SIZES.find(s => s.id === state.selectedSize);
   const finish = FINISHES.find(f => f.id === state.selectedFinish);
 
   const payload = {
+    // Verification
+    turnstile_token: turnstileToken,
+
     // Routing / subject
     _replyto:  state.customer.email,
     _subject:  `New Order #${state.orderId} — ${state.selectedProduct?.name || 'Custom Item'}`,

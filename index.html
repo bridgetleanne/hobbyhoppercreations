@@ -16,7 +16,13 @@
   <!-- Styles -->
   <link rel="stylesheet" href="css/style.css" />
 
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
   <!-- No payment SDK needed — invoicing handled via Make.com + Square -->
+
+  <!-- Cloudflare Turnstile -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body>
@@ -408,7 +414,23 @@
               </div>
             </div>
 
+            <!-- Cloudflare Turnstile -->
+            <div class="cf-turnstile"
+                 data-sitekey="0x4AAAAAAC_5mZ6FSA5ssA1t"
+                 data-theme="dark"
+                 data-size="normal"
+                 style="margin-bottom:16px">
+            </div>
+
             <div id="payment-status" aria-live="polite" style="margin:16px 0"></div>
+
+            <!-- Cloudflare Turnstile -->
+            <div class="cf-turnstile"
+                 data-sitekey="0x4AAAAAAC_5mZ6FSA5ssA1t"
+                 data-theme="dark"
+                 data-size="normal"
+                 style="margin-bottom:16px">
+            </div>
 
             <div class="form-nav">
               <button class="form-nav-back" id="back-to-step2">← Back</button>
