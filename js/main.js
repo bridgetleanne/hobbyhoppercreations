@@ -1,23 +1,11 @@
 /* ================================================
    HOBBY HOPPER CREATIONS — Main JS
-   Square Payments + EmailJS Order Notifications
+   Order form → Formspree → Make.com → Square Invoice
    ================================================ */
 
 // ── CONFIG ─────────────────────────────────────
-// ⚠️  Replace these with your real credentials!
 const CONFIG = {
-  // Square Web Payments SDK
-  squareAppId:       'sandbox-sq0idb-REPLACE_WITH_YOUR_APP_ID',
-  squareLocationId:  'REPLACE_WITH_YOUR_LOCATION_ID',
-  squareEnv:         'sandbox', // Change to 'production' when live
-
-  // EmailJS (for owner notifications)
-  emailjsServiceId:  'YOUR_EMAILJS_SERVICE_ID',
-  emailjsTemplateId: 'YOUR_EMAILJS_TEMPLATE_ID',
-  emailjsPublicKey:  'YOUR_EMAILJS_PUBLIC_KEY',
-  ownerEmail:        'your@email.com',
-
-  // Business info
+  formspreeEndpoint: 'https://formspree.io/f/xgorzkpy',
   businessName:      'Hobby Hopper Creations',
   businessEmail:     'orders@hobbyhoppercreations.com',
 };
@@ -37,49 +25,47 @@ const PRODUCTS = [
 ];
 
 const COLORS = [
-  { name: 'Midnight Black',   hex: '#1a1a1a',  filament: 'PLA' },
-  { name: 'Glacier White',    hex: '#f0f0f0',  filament: 'PLA' },
-  { name: 'Deep Crimson',     hex: '#8b0000',  filament: 'PLA' },
-  { name: 'Ocean Teal',       hex: '#008b8b',  filament: 'PLA' },
-  { name: 'Royal Purple',     hex: '#5b0ca8',  filament: 'PLA' },
-  { name: 'Sunset Orange',    hex: '#e05a00',  filament: 'PLA' },
-  { name: 'Electric Blue',    hex: '#005cc8',  filament: 'PLA' },
-  { name: 'Forest Green',     hex: '#2d6a2d',  filament: 'PLA' },
-  { name: 'Rose Gold',        hex: '#c4737a',  filament: 'PLA+' },
-  { name: 'Galaxy Silk',      hex: '#4a1a6e',  filament: 'Silk PLA' },
-  { name: 'Chrome Silver',    hex: '#a8a8b0',  filament: 'Silk PLA' },
-  { name: 'Aurora Teal',      hex: '#00c8b0',  filament: 'Silk PLA' },
+  { name: 'Midnight Black',  hex: '#1a1a1a', filament: 'PLA'      },
+  { name: 'Glacier White',   hex: '#f0f0f0', filament: 'PLA'      },
+  { name: 'Deep Crimson',    hex: '#8b0000', filament: 'PLA'      },
+  { name: 'Ocean Teal',      hex: '#008b8b', filament: 'PLA'      },
+  { name: 'Royal Purple',    hex: '#5b0ca8', filament: 'PLA'      },
+  { name: 'Sunset Orange',   hex: '#e05a00', filament: 'PLA'      },
+  { name: 'Electric Blue',   hex: '#005cc8', filament: 'PLA'      },
+  { name: 'Forest Green',    hex: '#2d6a2d', filament: 'PLA'      },
+  { name: 'Rose Gold',       hex: '#c4737a', filament: 'PLA+'     },
+  { name: 'Galaxy Silk',     hex: '#4a1a6e', filament: 'Silk PLA' },
+  { name: 'Chrome Silver',   hex: '#a8a8b0', filament: 'Silk PLA' },
+  { name: 'Aurora Teal',     hex: '#00c8b0', filament: 'Silk PLA' },
 ];
 
 const SIZES = [
-  { id: 'sm',  label: 'Small',   desc: '~2–3"',   multiplier: 1.0 },
-  { id: 'md',  label: 'Medium',  desc: '~4–5"',   multiplier: 1.6 },
-  { id: 'lg',  label: 'Large',   desc: '~6–8"',   multiplier: 2.4 },
-  { id: 'xl',  label: 'X-Large', desc: '8"+',     multiplier: 3.5 },
+  { id: 'sm', label: 'Small',   desc: '~2–3"', multiplier: 1.0 },
+  { id: 'md', label: 'Medium',  desc: '~4–5"', multiplier: 1.6 },
+  { id: 'lg', label: 'Large',   desc: '~6–8"', multiplier: 2.4 },
+  { id: 'xl', label: 'X-Large', desc: '8"+',   multiplier: 3.5 },
 ];
 
 const FINISHES = [
-  { id: 'standard',  label: 'Standard',        desc: 'As-printed finish',         surcharge: 0  },
-  { id: 'sanded',    label: 'Sanded Smooth',   desc: 'Sanded for smoothness',     surcharge: 6  },
-  { id: 'painted',   label: 'Hand-Painted',    desc: 'Single accent color',       surcharge: 14 },
-  { id: 'epoxy',     label: 'Epoxy Coated',    desc: 'Glossy protective coat',    surcharge: 10 },
+  { id: 'standard', label: 'Standard',      desc: 'As-printed finish',      surcharge: 0  },
+  { id: 'sanded',   label: 'Sanded Smooth', desc: 'Sanded for smoothness',  surcharge: 6  },
+  { id: 'painted',  label: 'Hand-Painted',  desc: 'Single accent color',    surcharge: 14 },
+  { id: 'epoxy',    label: 'Epoxy Coated',  desc: 'Glossy protective coat', surcharge: 10 },
 ];
 
 // ── STATE ───────────────────────────────────────
 let state = {
-  currentStep:    1,
-  selectedProduct: null,
-  selectedColor:   null,
-  selectedSize:    'md',
-  selectedFinish:  'standard',
-  quantity:        1,
+  currentStep:         1,
+  selectedProduct:     null,
+  selectedColor:       null,
+  selectedSize:        'md',
+  selectedFinish:      'standard',
+  quantity:            1,
   specialInstructions: '',
-  customer: {
-    name: '', email: '', phone: ''
-  },
+  customer: { name: '', email: '', phone: '' },
+  shipping: { address: '', city: '', state: '', zip: '' },
   orderTotal: 0,
-  squareCard: null,
-  orderId: null,
+  orderId:    null,
 };
 
 // ── INIT ────────────────────────────────────────
@@ -95,7 +81,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initSizeOptions();
   initFinishOptions();
   updateSummary();
-  initSquare();
 });
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -116,11 +101,10 @@ function initStars() {
     stars = [];
     for (let i = 0; i < count; i++) {
       stars.push({
-        x:       Math.random() * W,
-        y:       Math.random() * H,
-        r:       Math.random() * 1.5 + 0.2,
-        alpha:   Math.random(),
-        speed:   Math.random() * 0.008 + 0.002,
+        x: Math.random() * W, y: Math.random() * H,
+        r: Math.random() * 1.5 + 0.2,
+        alpha: Math.random(),
+        speed: Math.random() * 0.008 + 0.002,
         twinkle: Math.random() * Math.PI * 2,
       });
     }
@@ -133,8 +117,7 @@ function initStars() {
       s.alpha = 0.3 + Math.sin(s.twinkle) * 0.3;
       ctx.beginPath();
       ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      const teal = Math.random() > 0.7;
-      ctx.fillStyle = teal
+      ctx.fillStyle = Math.random() > 0.7
         ? `rgba(0,200,180,${s.alpha * 0.7})`
         : `rgba(200,240,240,${s.alpha})`;
       ctx.fill();
@@ -142,9 +125,7 @@ function initStars() {
     requestAnimationFrame(draw);
   }
 
-  resize();
-  createStars();
-  draw();
+  resize(); createStars(); draw();
   window.addEventListener('resize', () => { resize(); createStars(); });
 }
 
@@ -156,34 +137,30 @@ function initNavbar() {
   const ham  = document.querySelector('.nav-hamburger');
   const menu = document.querySelector('.nav-links');
 
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  });
+  window.addEventListener('scroll', () =>
+    nav.classList.toggle('scrolled', window.scrollY > 40)
+  );
 
   ham?.addEventListener('click', () => {
-    menu.classList.toggle('open');
+    const open = menu.classList.toggle('open');
+    ham.setAttribute('aria-expanded', open);
   });
 
-  document.querySelectorAll('.nav-links a').forEach(a => {
-    a.addEventListener('click', () => menu.classList.remove('open'));
-  });
+  document.querySelectorAll('.nav-links a').forEach(a =>
+    a.addEventListener('click', () => menu.classList.remove('open'))
+  );
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SCROLL REVEAL
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function initReveal() {
-  const els = document.querySelectorAll('.reveal');
   const obs = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) {
-        e.target.style.transitionDelay = `${i * 60}ms`;
-        e.target.classList.add('visible');
-        obs.unobserve(e.target);
-      }
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
     });
   }, { threshold: 0.12 });
-  els.forEach(el => obs.observe(el));
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -203,9 +180,7 @@ function renderProducts(filter = 'all') {
   const grid = document.getElementById('products-grid');
   if (!grid) return;
 
-  const filtered = filter === 'all'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.category === filter);
+  const filtered = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
 
   grid.innerHTML = filtered.map(p => `
     <div class="product-card reveal" onclick="selectProduct('${p.id}')">
@@ -218,9 +193,7 @@ function renderProducts(filter = 'all') {
         <p>${p.desc}</p>
         <div class="product-meta">
           <div class="product-price">
-            ${p.basePrice === 0
-              ? '<em>Varies by complexity</em>'
-              : `Starting at <strong>$${p.basePrice}</strong>`}
+            ${p.basePrice === 0 ? '<em>Custom pricing</em>' : `Starting at <strong>$${p.basePrice}</strong>`}
           </div>
           <button class="btn btn-sm btn-outline">Order →</button>
         </div>
@@ -228,12 +201,9 @@ function renderProducts(filter = 'all') {
     </div>
   `).join('');
 
-  // Re-init reveal on new cards
   document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
     const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-      });
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
     }, { threshold: 0.1 });
     obs.observe(el);
   });
@@ -243,76 +213,61 @@ function selectProduct(id) {
   const product = PRODUCTS.find(p => p.id === id);
   if (!product) return;
   state.selectedProduct = product;
-  updateSummary();
-  // Update the product dropdown in form
   const sel = document.getElementById('order-product');
-  if (sel) {
-    sel.value = id;
-    sel.dispatchEvent(new Event('change'));
-  }
-  // Scroll to order form
+  if (sel) { sel.value = id; sel.dispatchEvent(new Event('change')); }
+  updateSummary();
   document.getElementById('order')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   goToStep(1);
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// ORDER FORM
+// ORDER FORM INIT
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function initOrderForm() {
-  // Populate product dropdown
   const sel = document.getElementById('order-product');
   if (sel) {
     sel.innerHTML = '<option value="">— Select an item —</option>' +
       PRODUCTS.map(p => `<option value="${p.id}">${p.name}${p.basePrice ? ` (from $${p.basePrice})` : ' (custom pricing)'}</option>`).join('');
-
     sel.addEventListener('change', () => {
-      const p = PRODUCTS.find(p => p.id === sel.value);
-      state.selectedProduct = p || null;
+      state.selectedProduct = PRODUCTS.find(p => p.id === sel.value) || null;
       updateSummary();
     });
   }
 
-  // Quantity
-  const qtyInput = document.getElementById('order-qty');
-  qtyInput?.addEventListener('input', () => {
-    state.quantity = Math.max(1, parseInt(qtyInput.value) || 1);
+  document.getElementById('order-qty')?.addEventListener('input', e => {
+    state.quantity = Math.max(1, parseInt(e.target.value) || 1);
     updateSummary();
   });
 
-  // Special instructions
-  const notesInput = document.getElementById('order-notes');
-  notesInput?.addEventListener('input', () => {
-    state.specialInstructions = notesInput.value;
+  document.getElementById('order-notes')?.addEventListener('input', e => {
+    state.specialInstructions = e.target.value;
   });
 
-  // Customer fields
-  ['name','email','phone'].forEach(field => {
-    document.getElementById(`customer-${field}`)?.addEventListener('input', (e) => {
-      state.customer[field] = e.target.value;
-    });
-  });
+  ['name','email','phone'].forEach(f =>
+    document.getElementById(`customer-${f}`)?.addEventListener('input', e => { state.customer[f] = e.target.value; })
+  );
 
-  // Navigation buttons
+  ['address','city','state','zip'].forEach(f =>
+    document.getElementById(`shipping-${f}`)?.addEventListener('input', e => { state.shipping[f] = e.target.value; })
+  );
+
   document.getElementById('next-to-step2')?.addEventListener('click', () => validateAndNext(1));
   document.getElementById('next-to-step3')?.addEventListener('click', () => validateAndNext(2));
   document.getElementById('back-to-step1')?.addEventListener('click', () => goToStep(1));
   document.getElementById('back-to-step2')?.addEventListener('click', () => goToStep(2));
-
-  // Payment submit
-  document.getElementById('submit-payment')?.addEventListener('click', handlePaymentSubmit);
+  document.getElementById('submit-payment')?.addEventListener('click', handleFormSubmit);
+  document.getElementById('close-modal')?.addEventListener('click', () => {
+    document.getElementById('success-modal')?.classList.remove('open');
+    location.reload();
+  });
 }
 
 function initColorSwatches() {
   const container = document.getElementById('color-swatches');
   if (!container) return;
-
   container.innerHTML = COLORS.map(c => `
-    <div class="color-swatch"
-         style="background:${c.hex}"
-         title="${c.name} (${c.filament})"
-         data-color="${c.name}"
-         onclick="selectColor(this, '${c.name}')">
-    </div>
+    <div class="color-swatch" style="background:${c.hex}" title="${c.name} (${c.filament})"
+         data-color="${c.name}" onclick="selectColor(this,'${c.name}')"></div>
   `).join('');
 }
 
@@ -320,18 +275,17 @@ function selectColor(el, colorName) {
   document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
   el.classList.add('selected');
   state.selectedColor = colorName;
-  document.getElementById('summary-color').textContent = colorName;
+  updateSummary();
 }
 
 function initSizeOptions() {
   const container = document.getElementById('size-options');
   if (!container) return;
-
   container.innerHTML = SIZES.map(s => `
     <div class="size-option ${s.id === state.selectedSize ? 'selected' : ''}"
-         data-size="${s.id}"
-         onclick="selectSize(this, '${s.id}')">
-      <strong>${s.label}</strong> <em style="color:var(--silver);font-size:0.78rem">${s.desc}</em>
+         data-size="${s.id}" onclick="selectSize(this,'${s.id}')">
+      <strong>${s.label}</strong>
+      <em style="color:var(--silver);font-size:0.78rem">${s.desc}</em>
     </div>
   `).join('');
 }
@@ -346,11 +300,9 @@ function selectSize(el, sizeId) {
 function initFinishOptions() {
   const container = document.getElementById('finish-options');
   if (!container) return;
-
   container.innerHTML = FINISHES.map(f => `
     <div class="finish-option ${f.id === state.selectedFinish ? 'selected' : ''}"
-         data-finish="${f.id}"
-         onclick="selectFinish(this, '${f.id}')">
+         data-finish="${f.id}" onclick="selectFinish(this,'${f.id}')">
       <strong>${f.label}${f.surcharge ? ` (+$${f.surcharge})` : ''}</strong>
       <span>${f.desc}</span>
     </div>
@@ -364,249 +316,166 @@ function selectFinish(el, finishId) {
   updateSummary();
 }
 
-// ── Step Navigation ──────────────────────────────
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// STEP NAVIGATION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function goToStep(n) {
   state.currentStep = n;
-  document.querySelectorAll('.form-panel').forEach((p, i) => {
-    p.classList.toggle('active', i + 1 === n);
-  });
+  document.querySelectorAll('.form-panel').forEach((p, i) => p.classList.toggle('active', i + 1 === n));
   document.querySelectorAll('.form-step-tab').forEach((t, i) => {
     t.classList.toggle('active', i + 1 === n);
     t.classList.toggle('completed', i + 1 < n);
   });
+  if (n === 3) populateReview();
 }
 
 function validateAndNext(step) {
   if (step === 1) {
-    if (!state.selectedProduct) {
-      showToast('Please select an item to order.', 'error');
-      return;
-    }
-    if (!state.selectedColor) {
-      showToast('Please choose a color.', 'error');
-      return;
-    }
+    if (!state.selectedProduct) return showToast('Please select an item.', 'error');
+    if (!state.selectedColor)   return showToast('Please choose a color.', 'error');
     goToStep(2);
   } else if (step === 2) {
     const name  = document.getElementById('customer-name')?.value.trim();
     const email = document.getElementById('customer-email')?.value.trim();
-    if (!name || !email) {
-      showToast('Please fill in your name and email.', 'error');
-      return;
-    }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      showToast('Please enter a valid email address.', 'error');
-      return;
-    }
-    state.customer.name  = name;
-    state.customer.email = email;
-    state.customer.phone = document.getElementById('customer-phone')?.value.trim() || '';
+    const addr  = document.getElementById('shipping-address')?.value.trim();
+    if (!name || !email)  return showToast('Please enter your name and email.', 'error');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showToast('Please enter a valid email.', 'error');
+    if (!addr) return showToast('Please enter a shipping address.', 'error');
+    state.customer.name    = name;
+    state.customer.email   = email;
+    state.customer.phone   = document.getElementById('customer-phone')?.value.trim() || '';
+    state.shipping.address = addr;
+    state.shipping.city    = document.getElementById('shipping-city')?.value.trim()  || '';
+    state.shipping.state   = document.getElementById('shipping-state')?.value.trim() || '';
+    state.shipping.zip     = document.getElementById('shipping-zip')?.value.trim()   || '';
     updateSummary();
     goToStep(3);
   }
 }
 
-// ── Price Calculation ────────────────────────────
-function calcTotal() {
-  if (!state.selectedProduct) return 0;
-  if (state.selectedProduct.basePrice === 0) return 0; // custom — owner will quote
+function populateReview() {
+  const size   = SIZES.find(s => s.id === state.selectedSize);
+  const finish = FINISHES.find(f => f.id === state.selectedFinish);
+  setEl('review-item',   state.selectedProduct?.name || '—');
+  setEl('review-color',  state.selectedColor || '—');
+  setEl('review-size',   size?.label || '—');
+  setEl('review-finish', finish?.label || '—');
+  setEl('review-qty',    state.quantity);
+  setEl('review-name',   state.customer.name || '—');
+  setEl('review-email',  state.customer.email || '—');
+  setEl('review-notes',  state.specialInstructions || 'None');
+}
 
-  const size    = SIZES.find(s => s.id === state.selectedSize) || SIZES[1];
-  const finish  = FINISHES.find(f => f.id === state.selectedFinish) || FINISHES[0];
-  const base    = state.selectedProduct.basePrice * size.multiplier;
-  const total   = (base + finish.surcharge) * state.quantity;
-  return Math.round(total * 100) / 100;
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PRICE CALCULATION & SUMMARY
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function calcTotal() {
+  if (!state.selectedProduct || state.selectedProduct.basePrice === 0) return 0;
+  const size   = SIZES.find(s => s.id === state.selectedSize) || SIZES[1];
+  const finish = FINISHES.find(f => f.id === state.selectedFinish) || FINISHES[0];
+  return Math.round((state.selectedProduct.basePrice * size.multiplier + finish.surcharge) * state.quantity * 100) / 100;
 }
 
 function updateSummary() {
-  const p     = state.selectedProduct;
-  const size  = SIZES.find(s => s.id === state.selectedSize) || SIZES[1];
-  const finish= FINISHES.find(f => f.id === state.selectedFinish) || FINISHES[0];
-  const total = calcTotal();
-  state.orderTotal = total;
+  const size   = SIZES.find(s => s.id === state.selectedSize) || SIZES[1];
+  const finish = FINISHES.find(f => f.id === state.selectedFinish) || FINISHES[0];
+  state.orderTotal = calcTotal();
 
-  setEl('summary-item',   p ? p.name : '—');
-  setEl('summary-size',   size.label);
-  setEl('summary-finish', finish.label + (finish.surcharge ? ` (+$${finish.surcharge})` : ''));
-  setEl('summary-qty',    state.quantity);
-  setEl('summary-color',  state.selectedColor || '—');
+  setEl('summary-item',     state.selectedProduct?.name || '—');
+  setEl('summary-color',    state.selectedColor || '—');
+  setEl('summary-size',     size.label);
+  setEl('summary-finish',   finish.label + (finish.surcharge ? ` (+$${finish.surcharge})` : ''));
+  setEl('summary-qty',      state.quantity);
   setEl('summary-customer', state.customer.name || '—');
 
   const totalEl = document.getElementById('summary-total');
   if (totalEl) {
-    totalEl.textContent = total === 0
-      ? (p ? 'Custom Quote' : '$0.00')
-      : `$${total.toFixed(2)}`;
-  }
-
-  // Show/hide custom note
-  const noteEl = document.getElementById('custom-pricing-note');
-  if (noteEl) noteEl.style.display = (p && p.basePrice === 0) ? 'block' : 'none';
-}
-
-function setEl(id, val) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = val;
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// SQUARE PAYMENTS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-async function initSquare() {
-  // Square's JS SDK is loaded in index.html
-  if (!window.Square) return;
-
-  try {
-    const payments = window.Square.payments(CONFIG.squareAppId, CONFIG.squareLocationId);
-    state.squareCard = await payments.card({
-      style: {
-        '.input-container': {
-          borderColor: 'rgba(0,232,208,0.25)',
-          borderRadius: '8px',
-        },
-        '.input-container.is-focus': {
-          borderColor: '#00e8d0',
-        },
-        input: {
-          color: '#eef8f8',
-          fontFamily: 'Raleway, sans-serif',
-          fontSize: '15px',
-        },
-        'input::placeholder': {
-          color: 'rgba(168,196,200,0.4)',
-        },
-        '.message-text': {
-          color: '#e05577',
-        },
-      }
-    });
-    await state.squareCard.attach('#card-container');
-  } catch (e) {
-    console.warn('Square init error (check your App ID / Location ID):', e);
-    document.getElementById('card-container').innerHTML =
-      '<p style="color:var(--silver);font-size:0.85rem;padding:8px;text-align:center">⚠️ Payment form loading — configure Square credentials in js/main.js</p>';
+    totalEl.textContent = state.orderTotal === 0
+      ? (state.selectedProduct ? 'Custom Quote' : '$0.00')
+      : `$${state.orderTotal.toFixed(2)}`;
   }
 }
 
-async function handlePaymentSubmit() {
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// FORMSPREE SUBMISSION
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+async function handleFormSubmit() {
   const btn = document.getElementById('submit-payment');
+  state.orderId = generateOrderId();
 
-  // Validate
-  if (!state.selectedProduct) return showToast('No product selected.', 'error');
-  if (!state.customer.email)  return showToast('Please complete your contact info.', 'error');
+  const size   = SIZES.find(s => s.id === state.selectedSize);
+  const finish = FINISHES.find(f => f.id === state.selectedFinish);
 
-  setStatus('Processing payment…', 'loading');
-  btn.disabled = true;
+  const payload = {
+    // Routing / subject
+    _replyto:  state.customer.email,
+    _subject:  `New Order #${state.orderId} — ${state.selectedProduct?.name || 'Custom Item'}`,
 
-  try {
-    state.orderId = generateOrderId();
-    let sourceId = null;
+    // Identifiers
+    order_id:  state.orderId,
+    timestamp: new Date().toLocaleString(),
 
-    // Handle custom-priced items differently
-    if (state.orderTotal === 0) {
-      // For custom quote items — just send notification, no payment
-      await sendOrderNotification(null);
-      showSuccessModal(true);
-      setStatus('', '');
-      btn.disabled = false;
-      return;
-    }
-
-    if (state.squareCard) {
-      const result = await state.squareCard.tokenize();
-      if (result.status === 'OK') {
-        sourceId = result.token;
-      } else {
-        const errMsg = result.errors?.map(e => e.message).join(', ') || 'Card error';
-        throw new Error(errMsg);
-      }
-    } else {
-      throw new Error('Payment form not initialized. Please check Square credentials.');
-    }
-
-    // In a real deployment you'd send sourceId + amount to your backend / serverless function
-    // For GitHub Pages, we send the payment token info in the order notification
-    // and process via Square Dashboard or a serverless function
-    await sendOrderNotification(sourceId);
-
-    setStatus('Payment processed! ✓', 'success');
-    showSuccessModal(false);
-
-  } catch (err) {
-    console.error(err);
-    setStatus(err.message || 'Payment failed. Please try again.', 'error');
-  } finally {
-    btn.disabled = false;
-  }
-}
-
-function setStatus(msg, type) {
-  const el = document.getElementById('payment-status');
-  if (!el) return;
-  el.textContent = msg;
-  el.className = type ? `status-${type}` : '';
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// EMAIL NOTIFICATIONS (EmailJS)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-async function sendOrderNotification(paymentToken) {
-  const size   = SIZES.find(s => s.id === state.selectedSize)?.label || '';
-  const finish = FINISHES.find(f => f.id === state.selectedFinish)?.label || '';
-
-  const templateParams = {
-    to_email:       CONFIG.ownerEmail,
-    order_id:       state.orderId,
+    // Customer
     customer_name:  state.customer.name,
     customer_email: state.customer.email,
     customer_phone: state.customer.phone || 'Not provided',
-    item:           state.selectedProduct?.name || '',
-    color:          state.selectedColor || 'Not specified',
-    size:           size,
-    finish:         finish,
-    quantity:       state.quantity,
-    special_notes:  state.specialInstructions || 'None',
-    order_total:    state.orderTotal > 0 ? `$${state.orderTotal.toFixed(2)}` : 'Custom Quote Requested',
-    payment_token:  paymentToken || 'N/A (Custom Quote)',
-    timestamp:      new Date().toLocaleString(),
+
+    // Shipping
+    shipping_address: state.shipping.address,
+    shipping_city:    state.shipping.city,
+    shipping_state:   state.shipping.state,
+    shipping_zip:     state.shipping.zip,
+
+    // Order
+    item:          state.selectedProduct?.name || '',
+    color:         state.selectedColor || 'Not specified',
+    size:          size?.label || '',
+    finish:        finish?.label || '',
+    quantity:      state.quantity,
+    special_notes: state.specialInstructions || 'None',
+
+    // Pricing
+    estimated_total: state.orderTotal > 0
+      ? `$${state.orderTotal.toFixed(2)}`
+      : 'Custom — please quote',
   };
 
-  if (window.emailjs) {
-    await emailjs.send(
-      CONFIG.emailjsServiceId,
-      CONFIG.emailjsTemplateId,
-      templateParams,
-      CONFIG.emailjsPublicKey
-    );
-  } else {
-    // EmailJS not loaded — log for development
-    console.log('📧 Order notification (EmailJS not configured):', templateParams);
+  setStatus('Submitting your order…', 'loading');
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch(CONFIG.formspreeEndpoint, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body:    JSON.stringify(payload),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      setStatus('', '');
+      showSuccessModal();
+    } else {
+      throw new Error(data?.errors?.map(e => e.message).join(', ') || 'Submission failed.');
+    }
+  } catch (err) {
+    console.error(err);
+    setStatus('Something went wrong — please try again or email us directly.', 'error');
+  } finally {
+    btn.disabled = false;
   }
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // SUCCESS MODAL
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function showSuccessModal(isCustomQuote) {
-  const overlay = document.getElementById('success-modal');
-  const msg     = document.getElementById('modal-message');
-  const orderId = document.getElementById('modal-order-id');
-
+function showSuccessModal() {
+  const msg = document.getElementById('modal-message');
   if (msg) {
-    msg.textContent = isCustomQuote
-      ? `Your custom order request has been received! We'll review your details and send a quote to ${state.customer.email} within 24 hours.`
-      : `Your order is confirmed and payment processed. A confirmation email will be sent to ${state.customer.email}.`;
+    msg.textContent = `Your order request has been received! Check your inbox at ${state.customer.email} — we'll send a Square invoice within 24 hours so you can pay securely.`;
   }
-  if (orderId) orderId.textContent = `Order #${state.orderId}`;
-
-  overlay?.classList.add('open');
+  setEl('modal-order-id', `Order #${state.orderId}`);
+  document.getElementById('success-modal')?.classList.add('open');
 }
-
-document.getElementById('close-modal')?.addEventListener('click', () => {
-  document.getElementById('success-modal')?.classList.remove('open');
-  // Reset form
-  location.reload();
-});
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // FAQ
@@ -614,7 +483,7 @@ document.getElementById('close-modal')?.addEventListener('click', () => {
 function initFAQ() {
   document.querySelectorAll('.faq-question').forEach(btn => {
     btn.addEventListener('click', () => {
-      const item = btn.closest('.faq-item');
+      const item    = btn.closest('.faq-item');
       const wasOpen = item.classList.contains('open');
       document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
       if (!wasOpen) item.classList.add('open');
@@ -623,18 +492,24 @@ function initFAQ() {
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// TOAST
+// TOAST & STATUS
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 function showToast(message, type = 'success') {
   const container = document.getElementById('toast-container');
   if (!container) return;
-
-  const icon = type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ';
+  const icon  = type === 'error' ? '✕' : '✓';
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.innerHTML = `<span class="toast-icon">${icon}</span><span>${message}</span>`;
   container.appendChild(toast);
-  setTimeout(() => toast.remove(), 4000);
+  setTimeout(() => toast.remove(), 4500);
+}
+
+function setStatus(msg, type) {
+  const el = document.getElementById('payment-status');
+  if (!el) return;
+  el.textContent = msg;
+  el.className   = type ? `status-${type}` : '';
 }
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -646,7 +521,12 @@ function generateOrderId() {
   return `HHC-${ts}-${rnd}`;
 }
 
-// Expose globals for inline onclick
+function setEl(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+
+// Expose for inline onclick handlers
 window.selectProduct = selectProduct;
 window.selectColor   = selectColor;
 window.selectSize    = selectSize;
