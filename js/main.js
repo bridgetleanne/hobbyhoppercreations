@@ -5,7 +5,7 @@
 
 // ── CONFIG ─────────────────────────────────────
 const CONFIG = {
-  formspreeEndpoint: 'https://formspree.io/f/xgorzkpy',
+  formspreeEndpoint: 'https://hook.us2.make.com/8srgnsrd9svdk72pqag6wla8gwyu4612',
   businessName:      'Hobby Hopper Creations',
   businessEmail:     'orders@hobbyhoppercreations.com',
 };
